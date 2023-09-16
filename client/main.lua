@@ -9,7 +9,7 @@ RegisterNetEvent('qb-robberylist:client:AvailableRobberies', function()
         {
             isMenuHeader = true,
             icon = "fa-solid fa-circle-info",
-            header = "Available Robberies",
+            header = "📝 Available Robberies",
         }
     }
     for k, v in pairs(Config.RobberyList) do
@@ -54,7 +54,7 @@ RegisterNetEvent('qb-robberylist:client:OpenShop', function()
         {
             isMenuHeader = true,
             icon = "fa-solid fa-circle-info",
-            header = "Welcome to my little shop"
+            header = "💰 Shop"
         }
     }
     for k, v in pairs(Config.Shop) do
@@ -87,7 +87,7 @@ RegisterNetEvent('qb-robberylist:client:MainMenu', function()
         {
             isMenuHeader = true,
             icon = "fa-solid fa-circle-info",
-            header = "I heard you seek information"
+            header = "❓ Information"
         },
         {
             icon = "fa-solid fa-circle-info",
@@ -112,31 +112,40 @@ end)
 --    TriggerEvent('qb-robberylist:client:MainMenu')
 --end, false)
 
-for i = 1, #Config.Peds do
-    exports['qb-target']:SpawnPed({
-        model = Config.Peds[i].model,
-        coords = Config.Peds[i].coords,
-        minusOne = true,
-        freeze = true,
-        invincible = true,
-        blockevents = true,
-        scenario = 'WORLD_HUMAN_AA_COFFEE',
-        target = {
-            options = {
+-- Target Doors
+for k, v in pairs(Config.DoorLocations) do
+    exports['qb-target']:AddCircleZone(v.name, v.location, 1, {
+        name = v.Name,
+        debugPoly = Config.Debug,
+    }, {
+        options = {
             {
-                type = "client",
-                icon = 'fa-solid fa-question',
-                label = 'Talk to Wade',
-
-                action = function()
-                    TriggerEvent('qb-robberylist:client:MainMenu')
-                end,
+                num = 1,
+                type = 'client',
+                event = 'qb-robberylist:client:DoorKnock',
+                icon = 'fas fa-question',
+                label = 'Unknown',
+                drawDistance = 1,
+                drawColor = {255, 255, 255, 255},
+                successDrawColor = {30, 144, 255, 255}
             }
-            },
-            distance = 2.5,
         },
+        distance = 1
     })
 end
+
+RegisterNetEvent('qb-robberylist:client:DoorKnock', function()
+    QBCore.Functions.Progressbar('Knocking', 'Knocking...', 3000, false, true, {
+        TriggerEvent('animations:client:EmoteCommandStart', {"knock"}),
+        disableMovement = true,
+        disableMouse = false, 
+        disableCombat = true
+    }, {}, {}, {}, function()
+        TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+        TriggerEvent('qb-robberylist:client:MainMenu')
+    end, function ()
+    end)
+end)
 
 -- do something like when a TriggerClientEvent('qb-robberylist:client:SetBankCD', -1, true) when a bank is being robbed
 -- do something like TriggerClientEvent('qb-robberylist:client:SetBankCD', -1, false) when a bank can be hit again
